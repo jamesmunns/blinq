@@ -37,13 +37,13 @@
 //!
 //! blinq.enqueue(patterns::morse::H); // 8 steps
 //! blinq.enqueue(patterns::morse::E); // 2 steps
-//! blinq.enqueue(patterns::morse::L); // 9 steps
-//! blinq.enqueue(patterns::morse::L); // 9 steps
-//! blinq.enqueue(patterns::morse::O); // 9 steps
-//! blinq.enqueue(patterns::morse::FULL_STOP); // 15 steps
+//! blinq.enqueue(patterns::morse::L); // 10 steps
+//! blinq.enqueue(patterns::morse::L); // 10 steps
+//! blinq.enqueue(patterns::morse::O); // 12 steps
+//! blinq.enqueue(patterns::morse::FULL_STOP); // 18 steps
 //!
-//! // This is 52 steps
-//! for _ in 0..52 {
+//! // This is 60 steps
+//! for _ in 0..60 {
 //!    blinq.step();
 //! }
 //!
@@ -186,13 +186,13 @@ impl Pattern {
 ///
 /// blinq.enqueue(patterns::morse::H); // 8 steps
 /// blinq.enqueue(patterns::morse::E); // 2 steps
-/// blinq.enqueue(patterns::morse::L); // 9 steps
-/// blinq.enqueue(patterns::morse::L); // 9 steps
-/// blinq.enqueue(patterns::morse::O); // 9 steps
-/// blinq.enqueue(patterns::morse::FULL_STOP); // 15 steps
+/// blinq.enqueue(patterns::morse::L); // 10 steps
+/// blinq.enqueue(patterns::morse::L); // 10 steps
+/// blinq.enqueue(patterns::morse::O); // 12 steps
+/// blinq.enqueue(patterns::morse::FULL_STOP); // 18 steps
 ///
-/// // This is 52 steps
-/// for _ in 0..52 {
+/// // This is 60 steps
+/// for _ in 0..60 {
 ///    blinq.step();
 /// }
 ///
@@ -237,6 +237,14 @@ where
         }
     }
 
+    /// Consume the queue, returning the gpio
+    ///
+    /// Note: The gpio will be in whatever the last state
+    /// was, which may be active or inactive
+    pub fn release(self) -> G {
+        self.gpio
+    }
+
     /// Enqueue a new pattern into the queue
     ///
     /// If the queue is currently full, the pattern will be discarded
@@ -267,6 +275,11 @@ where
     /// every 125ms.
     pub fn step(&mut self) {
         let _ = self.try_step();
+    }
+
+    /// Is the queue empty?
+    pub fn idle(&self) -> bool {
+        self.current.is_none() && self.queue.peek().is_none()
     }
 
     /// Try to move the queue one step
@@ -381,13 +394,19 @@ mod tests {
         stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), true);
         stepr.step();
+        assert_eq!(STATE.load(Ordering::SeqCst), true);
+        stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), false);
         stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), true);
         stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), true);
         stepr.step();
+        assert_eq!(STATE.load(Ordering::SeqCst), true);
+        stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), false);
+        stepr.step();
+        assert_eq!(STATE.load(Ordering::SeqCst), true);
         stepr.step();
         assert_eq!(STATE.load(Ordering::SeqCst), true);
         stepr.step();
@@ -437,13 +456,19 @@ mod tests {
             stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), true);
             stepr.step();
+            assert_eq!(STATE.load(Ordering::SeqCst), true);
+            stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), false);
             stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), true);
             stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), true);
             stepr.step();
+            assert_eq!(STATE.load(Ordering::SeqCst), true);
+            stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), false);
+            stepr.step();
+            assert_eq!(STATE.load(Ordering::SeqCst), true);
             stepr.step();
             assert_eq!(STATE.load(Ordering::SeqCst), true);
             stepr.step();

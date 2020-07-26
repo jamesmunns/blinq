@@ -17,13 +17,13 @@ let mut blinq: Blinq<consts::U8, FakeGpio> = Blinq::new(gpio, true);
 
 blinq.enqueue(patterns::morse::H); // 8 steps
 blinq.enqueue(patterns::morse::E); // 2 steps
-blinq.enqueue(patterns::morse::L); // 9 steps
-blinq.enqueue(patterns::morse::L); // 9 steps
-blinq.enqueue(patterns::morse::O); // 9 steps
-blinq.enqueue(patterns::morse::FULL_STOP); // 15 steps
+blinq.enqueue(patterns::morse::L); // 10 steps
+blinq.enqueue(patterns::morse::L); // 10 steps
+blinq.enqueue(patterns::morse::O); // 12 steps
+blinq.enqueue(patterns::morse::FULL_STOP); // 18 steps
 
-// This is 52 steps
-for _ in 0..52 {
+// This is 60 steps
+for _ in 0..60 {
    blinq.step();
 }
 

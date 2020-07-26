@@ -1,6 +1,6 @@
 [package]
 name = "blinq"
-version = "0.1.1"
+version = "0.1.2"
 description = "An embedded-hal blinking queue"
 repository = "https://github.com/jamesmunns/blinq"
 authors = ["James Munns <james.munns@ferrous-systems.com>"]
