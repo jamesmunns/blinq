@@ -7,7 +7,7 @@
 #![no_std]
 #![no_main]
 
-use blinq::{consts, patterns, Blinq};
+use blinq::{patterns, Blinq};
 use cortex_m_rt::entry;
 use embedded_hal::blocking::delay::DelayMs;
 use nrf52840_hal::{
@@ -32,8 +32,8 @@ fn main() -> ! {
     let led1 = gpios.p0_13.into_push_pull_output(Level::High);
     let led2 = gpios.p0_14.into_push_pull_output(Level::High);
 
-    let mut blinq_sos: Blinq<consts::U1, P0_13<Output<PushPull>>> = Blinq::new(led1, true);
-    let mut blinq_hello: Blinq<consts::U6, P0_14<Output<PushPull>>> = Blinq::new(led2, true);
+    let mut blinq_sos: Blinq<P0_13<Output<PushPull>>, 2> = Blinq::new(led1, true);
+    let mut blinq_hello: Blinq<P0_14<Output<PushPull>>, 7> = Blinq::new(led2, true);
 
     loop {
         if blinq_sos.idle() && blinq_hello.idle() {

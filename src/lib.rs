@@ -28,10 +28,12 @@
 //! # static STATE: AtomicBool = AtomicBool::new(false);
 //! # let gpio = FakeGpio { state: &STATE };
 //! #
-//! use blinq::{Pattern, Blinq, patterns, consts};
+//! use blinq::{Pattern, Blinq, patterns};
 //!
-//! // Create a blink queue with room for 8 patterns, that is active-low
-//! let mut blinq: Blinq<consts::U8, FakeGpio> = Blinq::new(gpio, true);
+//! // Create a blink queue with room for 8 patterns, that is active-low.
+//! // Note that the queue size must be one larger than the amount of patterns
+//! // that you wish to store!
+//! let mut blinq: Blinq<FakeGpio, 9> = Blinq::new(gpio, true);
 //!
 //! // Insert "HELLO." in morse code
 //!
@@ -56,12 +58,7 @@
 
 use embedded_hal::digital::v2::OutputPin;
 
-use heapless::{
-    spsc::{Queue, SingleCore},
-    ArrayLength,
-};
-
-pub use heapless::consts;
+use heapless::spsc::Queue;
 
 pub mod patterns;
 
@@ -177,10 +174,12 @@ impl Pattern {
 /// # static STATE: AtomicBool = AtomicBool::new(false);
 /// # let gpio = FakeGpio { state: &STATE };
 /// #
-/// use blinq::{Pattern, Blinq, patterns, consts};
+/// use blinq::{Pattern, Blinq, patterns};
 ///
 /// // Create a blink queue with room for 8 patterns, that is active-low
-/// let mut blinq: Blinq<consts::U8, FakeGpio> = Blinq::new(gpio, true);
+/// // Note that the queue size must be one larger than the amount of patterns
+/// // that you wish to store!
+/// let mut blinq: Blinq<FakeGpio, 9> = Blinq::new(gpio, true);
 ///
 /// // Insert "HELLO." in morse code
 ///
@@ -200,21 +199,19 @@ impl Pattern {
 /// // inactive state
 /// blinq.step();
 /// ```
-pub struct Blinq<N, G>
+pub struct Blinq<G, const N: usize>
 where
-    N: ArrayLength<Pattern>,
     G: OutputPin,
 {
     current: Option<Pattern>,
-    queue: Queue<Pattern, N, u8, SingleCore>,
+    queue: Queue<Pattern, N>,
     step: u8,
     gpio: G,
     active_low: bool,
 }
 
-impl<N, G> Blinq<N, G>
+impl<G, const N: usize> Blinq<G, N>
 where
-    N: ArrayLength<Pattern>,
     G: OutputPin,
 {
     /// Create a new Blinq with the given GPIO
@@ -230,7 +227,7 @@ where
 
         Self {
             current: None,
-            queue: unsafe { Queue::u8_sc() },
+            queue: Queue::new(),
             step: 0,
             gpio,
             active_low,
@@ -349,7 +346,6 @@ where
 mod tests {
     use super::*;
     use crate::patterns::morse::SOS;
-    use heapless::consts::*;
 
     use core::sync::atomic::{AtomicBool, Ordering};
 
@@ -373,7 +369,7 @@ mod tests {
     fn simple() {
         static STATE: AtomicBool = AtomicBool::new(false);
         let fg = FakeGpio { state: &STATE };
-        let mut stepr: Blinq<U1, FakeGpio> = Blinq::new(fg, false);
+        let mut stepr: Blinq<FakeGpio, 2> = Blinq::new(fg, false);
         stepr.enqueue(SOS);
 
         stepr.step();
@@ -432,7 +428,7 @@ mod tests {
     fn queued() {
         static STATE: AtomicBool = AtomicBool::new(false);
         let fg = FakeGpio { state: &STATE };
-        let mut stepr: Blinq<U3, FakeGpio> = Blinq::new(fg, false);
+        let mut stepr: Blinq<FakeGpio, 4> = Blinq::new(fg, false);
         stepr.enqueue(SOS);
         stepr.enqueue(SOS);
         stepr.enqueue(SOS);

@@ -10,8 +10,9 @@ encoded as a u32.
 ```rust
 use blinq::{Pattern, Blinq, patterns, consts};
 
-// Create a blink queue with room for 8 patterns, that is active-low
-let mut blinq: Blinq<consts::U8, FakeGpio> = Blinq::new(gpio, true);
+// Create a blink queue with room for 8 patterns (note: the capacity must be 1 higher
+// then the amount of patterns you wish to store), that is active-low
+let mut blinq: Blinq<9, FakeGpio> = Blinq::new(gpio, true);
 
 // Insert "HELLO." in morse code
 

@@ -14,5 +14,5 @@ categories = [
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-heapless = "0.5.5"
+heapless = "0.7.0"
 embedded-hal = "0.2.4"
