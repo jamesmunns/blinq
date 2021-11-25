@@ -12,7 +12,7 @@ use blinq::{Pattern, Blinq, patterns, consts};
 
 // Create a blink queue with room for 8 patterns (note: the capacity must be 1 higher
 // then the amount of patterns you wish to store), that is active-low
-let mut blinq: Blinq<9, FakeGpio> = Blinq::new(gpio, true);
+let mut blinq: Blinq<FakeGpio, 9> = Blinq::new(gpio, true);
 
 // Insert "HELLO." in morse code
 
