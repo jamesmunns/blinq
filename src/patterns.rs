@@ -62,6 +62,12 @@ pub mod morse {
     pub const ERROR: Pattern = DOT.append(&DOT).append(&DOT).append(&DOT).append(&DOT).append(&DOT).append(&DOT).append(&DOT);
 
     pub const SOS: Pattern = S.append(&O).append(&S);
+    
+    /// 3 dits silence, but the dashes and dots of the letters all include one silent dit already
+    pub const LETTERSPACE: blinq::Pattern = blinq::Pattern::from_u32(0, 2);
+    /// 7 dits silence, but 3 are already in the preceding letter's LETTERSPACE, and 2 more are
+    /// deduced for the LETTERSPACE later added to this when treating a space as a character
+    pub const WORDSPACE: blinq::Pattern = blinq::Pattern::from_u32(0, 2);
 }
 
 pub mod blinks {
